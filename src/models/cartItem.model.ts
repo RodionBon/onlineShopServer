@@ -10,11 +10,10 @@ const CartItem = sequelize.define('cart_item', {
         type: DataTypes.NUMBER,
         allowNull: false
     },
-    cartId: {
+    userId: {
         type: DataTypes.NUMBER,
         allowNull: false
     }
-
 }, {
     tableName: 'cart_item',
     timestamps: false,
