@@ -9,7 +9,7 @@ export const getFilteredProducts = async (ctx: Context) => {
         const whereOptions: WhereOptions = {};
 
         if (searchQuery) {
-            whereOptions.title = { [Op.like]: `%${searchQuery}%` };
+            whereOptions.title = { [Op.iLike]: `%${searchQuery}%` };
         }
 
         if (minPrice && maxPrice) {
