@@ -4,7 +4,7 @@ import { Op, Order, Sequelize, WhereOptions } from "sequelize";
 
 export const getFilteredProducts = async (ctx: Context) => {
     try {
-        const { searchQuery, maxPrice, minPrice, isShowOnlyAvailable, filterType, itemsPerPage, pageNumber } = ctx.query;
+        const { searchQuery, maxPrice, minPrice, isShowOnlyAvailable, sortOrder, itemsPerPage, pageNumber } = ctx.query;
 
         const whereOptions: WhereOptions = {};
 
@@ -16,12 +16,12 @@ export const getFilteredProducts = async (ctx: Context) => {
             whereOptions.price = { [Op.between]: [minPrice, maxPrice] };
         }
 
-        if (isShowOnlyAvailable) {
+        if (isShowOnlyAvailable === "true") {
             whereOptions.itemsLeft = { [Op.gt]: 0 };
         }
 
         let orderType: Order;
-        switch (filterType) {
+        switch (sortOrder) {
             case 'fromCheap':
                 orderType = [['price', 'ASC']];
                 break;
@@ -43,11 +43,11 @@ export const getFilteredProducts = async (ctx: Context) => {
             limit: Number(itemsPerPage),
             offset: Number(pageNumber) * Number(itemsPerPage),
         });
-        const count = await Product.count({ where: whereOptions });
+        const totalProductsCount = await Product.count({ where: whereOptions });
         const maxAvailablePrice = await Product.max('price');
 
         ctx.status = 200;
-        ctx.body = { products, count, maxAvailablePrice };
+        ctx.body = { products, totalProductsCount, maxAvailablePrice };
     } catch (error) {
         console.error(error);
         ctx.status = 500;
