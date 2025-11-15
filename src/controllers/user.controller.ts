@@ -9,7 +9,7 @@ const generateToken = (userId: number): string => {
     if (!process.env.JWT_SECRET) {
         throw new Error('JWT_SECRET wurde nicht gesetzt');
     }
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1y' });
 };
 
 export const signIn = async (ctx: Context) => {
