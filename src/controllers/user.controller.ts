@@ -92,6 +92,7 @@ export const signUp = async (ctx: Context) => {
         ctx.body = { error: 'Interner Serverfehler' };
     }
 }
+
 export const getUser = async (ctx: Context) => {
     try {
         const token = ctx.headers.authorization?.split(' ')[1];
@@ -114,6 +115,40 @@ export const getUser = async (ctx: Context) => {
 
         ctx.status = 200;
         ctx.body = { user };
+    }
+    catch (error) {
+        console.error(error);
+        ctx.status = 500;
+        ctx.body = { error: 'Interner Serverfehler' };
+    }
+}
+
+export const updateUserData = async (ctx: Context) => {
+    try {
+        const token = ctx.headers.authorization?.split(' ')[1];
+        if (!token) {
+            ctx.status = 401;
+            ctx.body = { error: 'Token fehlt' };
+            return;
+        }
+
+        const { id } = jwt.verify(token, process.env.JWT_SECRET!) as { id: number };
+        const user = await User.findByPk(id, {
+            attributes: { exclude: ['encryptedPassword'] }
+        });
+
+        if (!user) {
+            ctx.status = 404;
+            ctx.body = { error: 'Benutzer nicht gefunden' };
+            return;
+        }
+
+        const newData = ctx.request.body;
+
+        await user.update(newData);
+
+        ctx.status = 200;
+        ctx.body = { newUserData: user };
     }
     catch (error) {
         console.error(error);
